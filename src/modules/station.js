@@ -39,8 +39,7 @@ export class Station {
   // Создание заправочных колонок
   createColumns() {
     if (this.typeStation.length === 0) {
-      this.#filling.push(new Column('petrol', 5), new Column('diesel', 5),
-        new Column('gas', 5));
+      this.#filling.push(new Column('petrol', 5));
     }
 
     for (const optionStation of this.typeStation) {
@@ -60,6 +59,10 @@ export class Station {
             this.#filling[j].car = this.#queue.splice(i, 1)[0];
             this.fillingGo(this.#filling[j]);
             this.renderStation.renderStation();
+            break;
+          } else if (this.#filling.length === 1 &&
+          this.#queue[i].typeFuel !== this.#filling[j].type) {
+            this.#queue.splice(i, 1)[0];
             break;
           }
         }

@@ -37,7 +37,6 @@ export class PassangerCar extends Car {
     super(brand, model, maxTank);
     const randomTypeFuel = Math.random() < 0.9 ? 'petrol' : 'gas';
     this.typeFuel = randomTypeFuel;
-    console.log(this.typeFuel);
   }
 }
 
@@ -48,6 +47,5 @@ export class Truck extends Car {
     super(brand, model, maxTank);
     const randomTypeFuel = Math.random() < 0.9 ? 'diesel' : 'gas';
     this.typeFuel = randomTypeFuel;
-    console.log(this.typeFuel);
   }
 }
