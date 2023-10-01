@@ -38,11 +38,13 @@ export class Station {
 
   // Создание заправочных колонок
   createColumns() {
-    if (this.typeStation.length === 0) {
-      this.#filling.push(new Column('petrol', 5));
-    }
-
     for (const optionStation of this.typeStation) {
+      if (!Object.prototype.hasOwnProperty.call(optionStation, 'count') &&
+        !Object.prototype.hasOwnProperty.call(optionStation, 'speed') &&
+        Object.prototype.hasOwnProperty.call(optionStation, 'type')) {
+        optionStation.count = 1;
+        optionStation.speed = 5;
+      }
       for (let i = 0; i < optionStation.count; i++) {
         this.#filling.push(new Column(optionStation.type, optionStation.speed));
       }
@@ -52,18 +54,25 @@ export class Station {
   // Проверить состояние очереди для заправки машины
   checkQueueToFilling() {
     if (this.#queue.length) {
+      const availableTypesColumns = this.#filling.map(column => column.type);
+      const carsWithoutColumns = [];
+
       for (let i = 0; i < this.#queue.length; i++) {
-        for (let j = 0; j < this.#filling.length; j++) {
-          if (!this.#filling[j].car &&
-          this.#queue[i].typeFuel === this.#filling[j].type) {
-            this.#filling[j].car = this.#queue.splice(i, 1)[0];
-            this.fillingGo(this.#filling[j]);
-            this.renderStation.renderStation();
-            break;
-          } else if (this.#filling.length === 1 &&
-          this.#queue[i].typeFuel !== this.#filling[j].type) {
-            this.#queue.splice(i, 1)[0];
-            break;
+        /* Если тип топлива машины не соответствует доступным видам колонок,
+        машина удаляется из списка и записывается в массив carsWithoutColumns */
+        if (!availableTypesColumns.includes(this.#queue[i].typeFuel)) {
+          carsWithoutColumns.push(this.#queue[i]);
+          this.#queue.splice(i, 1)[0];
+        } else {
+          // Определяется подходящая колонка
+          for (let j = 0; j < this.#filling.length; j++) {
+            if (!this.#filling[j].car &&
+              this.#queue[i].typeFuel === this.#filling[j].type) {
+              this.#filling[j].car = this.#queue.splice(i, 1)[0];
+              this.fillingGo(this.#filling[j]);
+              this.renderStation.renderStation();
+              break;
+            }
           }
         }
       }
